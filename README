@@ -1,0 +1,11 @@
+Notes for IRC.  This projects works for me.
+
+<charon> minor catch of course is that you need to have the submodule checked out
+<charon> if you want to do me a favour, send it to the git list... if you want to do me a big favour, shape it in the form of a patch that adds it as contrib/git-archive-recursive.sh or so
+<RobertLaptop> I am assume they have to be both checked out and match the code.
+<charon> no, they don't need to have the same revision checked out
+<charon> they merely must have all the objects present
+<charon> IOW, they need to be in a state from which you *could* check out the revision referenced in the supermodule
+* boz has quit ()
+<RobertLaptop> charon, ok that is good to know.  I am not a member of the git mailing list.
+<charon> doesn't matter, you can still send it :)
