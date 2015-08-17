@@ -1,20 +1,19 @@
 #!/bin/bash
-#---------------- functions ----------------
-function do_or_die {
-	"$@"
-	status=$?
-	if [ $status -ne 0 ]; then
-		echo "Error executing $1" 1>&2
-		exit $?
-	fi
-	return $status
-}
+
+set -e
 
 function read_one_level () {
 	export git_idx=$GIT_INDEX_FILE
+	export GIT_ALTERNATE_OBJECT_DIRECTORIES
 	echo "INFO Add submodules to index" 1>&2
 	
-	do_or_die git submodule --quiet foreach '
+	for gitpath in $(git submodule --quiet foreach 'git rev-parse --git-dir'); do
+		GIT_ALTERNATE_OBJECT_DIRECTORIES=$GIT_ALTERNATE_OBJECT_DIRECTORIES:$gitpath/objects
+	done
+
+
+	git submodule --quiet foreach '
+		set -e
 		echo "DEBUG Subcommit for $path in $toplevel $sha1" 1>&2
 		#
 		# Make sure we have the right git index file selected, and the
@@ -50,26 +49,15 @@ function read_one_level () {
 	'
 }
 
-#---------------- main code ----------------
-revision="$1"
-if [ "$revision" == "" ]; then
-	revision="HEAD"
-fi
-out="$2"
-if [ "$out" == "" ]; then
-	out="Archive.zip"
-fi
+# pop the last param
+revision=${@: -1}
+archive_params=${@:1:${#@}-1}
 
-export out
 export revision
 export GIT_INDEX_FILE="$PWD/.git/tmpindex"
 export up
 
-echo "INFO Building tmp index for $revision" 1>&2
-
-rm -f "$GIT_INDEX_FILE"
-
-git read-tree $revision
+git read-tree $(git rev-parse $revision)
 
 echo "INFO Recursing through submodules"
 while git ls-files -s | grep -q ^160000; do
@@ -77,7 +65,7 @@ while git ls-files -s | grep -q ^160000; do
 	read_one_level
 done
 
-echo "INFO Done, archiving to zip"
-git archive --output=$out --format=zip $(git write-tree)
+git_tree_hash=$(git write-tree)
+git archive ${archive_params} $git_tree_hash
 
 rm -f "$GIT_INDEX_FILE"
