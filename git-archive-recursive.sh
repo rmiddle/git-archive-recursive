@@ -14,7 +14,6 @@ function read_one_level () {
 
 	git submodule --quiet foreach '
 		set -e
-		echo "DEBUG Subcommit for $path in $toplevel $sha1" 1>&2
 		#
 		# Make sure we have the right git index file selected, and the
 		# object search path is manually set. This is needed because the
@@ -59,9 +58,8 @@ export up
 
 git read-tree $(git rev-parse $revision)
 
-echo "INFO Recursing through submodules"
+echo "INFO Looping through submodules"
 while git ls-files -s | grep -q ^160000; do
-	echo "DEBUG Read next level" 1>&2
 	read_one_level
 done
 
