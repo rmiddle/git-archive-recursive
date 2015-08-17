@@ -1,5 +1,8 @@
 #!/bin/bash
-
+#
+# Usage: git archive-recursive [ git archive options ] tree-ish
+#
+#
 set -e
 
 function read_one_level () {
