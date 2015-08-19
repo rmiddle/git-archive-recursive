@@ -59,6 +59,11 @@ export revision
 export GIT_INDEX_FILE="$PWD/.git/tmpindex"
 export up
 
+if [ $(git --version ) =~ 'version 1' ]; then
+	echo "ERROR: We need git 2.x for this version of git-archive"
+	exit 1
+fi
+
 git read-tree $(git rev-parse $revision)
 
 echo "INFO Looping through submodules"
