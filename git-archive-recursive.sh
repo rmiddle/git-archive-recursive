@@ -1,8 +1,5 @@
 #!/bin/bash
-#
-# Usage: git archive-recursive [ git archive options ] tree-ish
-#
-#
+
 set -e
 
 function read_one_level () {
@@ -59,7 +56,7 @@ export revision
 export GIT_INDEX_FILE="$PWD/.git/tmpindex"
 export up
 
-if [ $(git --version ) =~ 'version 1' ]; then
+if [[ "$(git --version )" =~ 'version 1' ]]; then
 	echo "ERROR: We need git 2.x for this version of git-archive"
 	exit 1
 fi
